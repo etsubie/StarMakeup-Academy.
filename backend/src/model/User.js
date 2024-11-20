@@ -7,9 +7,9 @@ const userSchema = new Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: [{ type: Schema.Types.ObjectId, ref: Role }],
+    role: { type: mongoose.Schema.Types.ObjectId, ref: "Role" },
   },
-  { timestamps: true, discriminatorKey: "role" }
+  { timestamps: true, discriminatorKey: "_roleType" }
 );
 const User = model("User", userSchema);
 export default User;
@@ -60,7 +60,6 @@ export const Client = User.discriminator("Client", clientSchema);
 
 const studentSchema = new Schema(
   {
-  
     course: { type: Schema.Types.ObjectId, ref: "Course", required: true },
     instructor: {
       type: Schema.Types.ObjectId,
