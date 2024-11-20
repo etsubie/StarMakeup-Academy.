@@ -5,14 +5,14 @@ import Permission from './Permission.js';
 const { Schema, model } = mongoose;
 
 const UserPermissionSchema = new Schema({
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: User,
+      ref: "User",
       required: true,
     },
-    permission: {
+    permissionId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: Permission,
+      ref: "Permission",
       required: true,
     },
   }, { timestamps: true });
