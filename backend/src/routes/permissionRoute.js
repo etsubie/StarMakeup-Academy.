@@ -1,7 +1,7 @@
 import express from 'express';
 import verifyToken from '../middleware/authMiddleware.js';
 import { authorizeRole } from '../middleware/roleMiddleware.js';
-import { assignPermissionToUser, createPermission, deletePermission, getPermissions, updatePermission } from '../controller/permissionController.js';
+import { createPermission, deletePermission, getPermissions, updatePermission } from '../controller/permissionController.js';
 
 const permissionRoute = express.Router();
 
@@ -36,12 +36,5 @@ permissionRoute.delete(
   authorizeRole('Manager'),
   deletePermission
 );
-// Route to assign a Permission to role
-permissionRoute.post(
-    '/assign',
-    verifyToken,
-    authorizeRole('Manager'),
-    assignPermissionToUser
-  );
 
 export default permissionRoute;

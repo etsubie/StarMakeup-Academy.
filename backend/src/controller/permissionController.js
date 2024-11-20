@@ -75,37 +75,5 @@ export const deletePermission = async (req, res) => {
   }
 };
 
-// Assign permission to a user
-export const assignPermissionToUser = async (req, res) => {
-    try {
-      const { userId, permissionName } = req.body;
-  
-      if (!userId || !permissionName) {
-        return res.status(400).json({ message: "user id and Permission name are required" });
-      }
-  
-      // Find the permission by name
-      const permission = await Permission.findOne({ name: permissionName });
-      if (!permission) {
-        return res.status(404).json({ message: "Permission not found" });
-      }
-  
-      // Use `findOneAndUpdate` to assign permission to user atomically
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: userId, "permissions": { $ne: permission._id } }, // Only update if the permission isn't already assigned
-        { $push: { permissions: permission._id } }, // Push the permission to the user
-        { new: true } // Return the updated user
-      ).populate("permissions");
-  
-      if (!updatedUser) {
-        return res.status(404).json({ message: "User not found or permission already assigned" });
-      }
-  
-      return res.status(200).json({ message: "Permission assigned to user successfully", user: updatedUser });
-    } catch (error) {
-      console.error("Error assigning permission to user:", error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  };
   
   
