@@ -7,7 +7,7 @@ const appointmentSchema = new Schema(
     service: { type: String, required: true },
     date: { type: Date, required: true },
     time: { type: String, required: true },
-    status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+    status: { type: String, enum: ['Pending', 'Confirmed', 'Cancelled'], default: 'Pending' },
   },
   { timestamps: true }
 );
