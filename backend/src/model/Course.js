@@ -4,7 +4,7 @@ const { Schema, model } = mongoose;
 
 const courseSchema = new Schema(
   {
-    image: { type: String }, // Path to the uploaded image
+    image: { type: String, required: true }, // Path to the uploaded image
     name: { type: String, required: true },
     description: { type: String },
     duration: { type: Number, required: true }, // e.g., weeks or months

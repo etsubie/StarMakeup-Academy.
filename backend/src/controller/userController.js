@@ -7,14 +7,14 @@ import UserPermission from "../model/UserPermission.js";
 
 // Create a new User
 export const createUser = async (req, res) => {
-  const { name, email, password, roleName, permissionNames } = req.body;
+  const { name, email, password, roleName, permissionNames, additionalData } = req.body;
 
   if (!email || !password || !roleName) {
     return res.status(400).json({ success: false, message: "Email, password, and role name are required" });
   }
 
   try {
-    // Check if User with the same email already exists
+    // Check if the user with the same email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ success: false, message: "User already exists" });
@@ -28,36 +28,83 @@ export const createUser = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create the new user
-    const newUser = new User({
+    const userData = {
       name,
       email,
       password: hashedPassword,
       role: role._id,
-    });
+    };
 
+    // Add subdocument data based on role
+    switch (roleName) {
+      case "Manager":
+        userData.manager = {};
+        break;
+      case "Coordinator":
+        userData.coordinator = {
+          permissions: additionalData?.permissions || [],
+        };
+        break;
+      case "Registrar":
+        userData.registrar = {
+          registeredStudents: additionalData?.registeredStudents || [],
+          chats: additionalData?.chats || [],
+        };
+        break;
+      case "Instructor":
+        userData.instructor = {
+          assignedStudents: additionalData?.assignedStudents || [],
+          attendanceRecords: additionalData?.attendanceRecords || [],
+          chats: additionalData?.chats || [],
+        };
+        break;
+      case "Client":
+        userData.client = {
+          feedbacks: additionalData?.feedbacks || [],
+          appointments: additionalData?.appointments || [],
+          chats: additionalData?.chats || [],
+        };
+        break;
+      case "Student":
+        userData.student = {
+          course: additionalData?.course,
+          instructor: additionalData?.instructor,
+          feeStatus: additionalData?.feeStatus || "Pending",
+          chats: additionalData?.chats || [],
+        };
+        break;
+      default:
+        return res.status(400).json({ success: false, message: `Unsupported role: '${roleName}'` });
+    }
+
+    // Create the new user
+    const newUser = new User(userData);
     await newUser.save();
 
     // Assign permissions if provided
     if (permissionNames && permissionNames.length > 0) {
       const permissions = await Permission.find({ name: { $in: permissionNames } });
-      if (permissions.length !== permissionNames.length) {
-        return res.status(400).json({ success: false, message: "Some permissions in the list were not found" });
+      const foundPermissionNames = permissions.map((p) => p.name);
+      const missingPermissions = permissionNames.filter((name) => !foundPermissionNames.includes(name));
+
+      if (missingPermissions.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Some permissions were not found: ${missingPermissions.join(", ")}`,
+        });
       }
 
       const userPermissionData = permissions.map((permission) => ({
         userId: newUser._id,
         permissionId: permission._id,
       }));
-
       await UserPermission.insertMany(userPermissionData);
     }
 
     return res.status(201).json({ success: true, message: "User created successfully", user: newUser });
   } catch (error) {
-    console.error("Error creating User:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("Error creating user:", error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 

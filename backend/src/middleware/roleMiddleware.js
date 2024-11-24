@@ -3,7 +3,7 @@
 export const authorizeRole = (...allowedRoles) => {
   return async (req, res, next) => {
     try {
-      const userRole = req.user.role.name; // Assuming `req.user` contains the authenticated user and their role
+      const userRole = req.user.role.name; // `req.user` contains the authenticated user and their role
 
       // Check if the user's role is one of the allowed roles
       if (!allowedRoles.includes(userRole)) {
