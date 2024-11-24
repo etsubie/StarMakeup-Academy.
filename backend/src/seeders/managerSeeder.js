@@ -13,15 +13,15 @@ const createManager = async () => {
     // Ensure Manager role exists
     let managerRole = await Role.findOne({ name: 'Manager' });
     if (!managerRole) {
-      managerRole = new Role({ name: 'Manager' });
-      await managerRole.save();
-      console.log("Manager role created");
+      console.log("Manager role not found");
     }
 
     const managerData = {
       name: 'Attna',
       email: 'manager@email.com',
-      role: managerRole._id, // Correctly assign role ID
+      role: managerRole._id, 
+      manager: {
+      },
       password: await bcrypt.hash('1234', 10), // Hashing password
     };
 

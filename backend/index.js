@@ -9,6 +9,7 @@ import permissionRoute from './src/routes/permissionRoute.js';
 import courseCategoreyRoute from './src/routes/courseCategoreyRoute.js';
 import fileUpload from 'express-fileupload';
 import courseRoute from './src/routes/courseRoute.js';
+import appointmentRoute from './src/routes/appointmentRoute.js';
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use('/api/permissions', permissionRoute);
 app.use('/api/users', userRoute);
 app.use("/api/courses", courseRoute);
 app.use('/api/course-categories', courseCategoreyRoute);
+app.use("/api/appointments", appointmentRoute);
 
 app.listen(port, () => { 
     console.log(`Server is running on port: ${port}`);

@@ -24,11 +24,11 @@ export const createCourse = async (req, res) => {
   try {
     const { name, description, duration, fee, categoryId } = req.body;
 
-    // if (!req.files || !req.files.image) {
-    //   return res.status(400).json({ message: "Course image is required" });
-    // }
+    if (!req.files || !req.files.image) {
+      return res.status(400).json({ message: "Course image is required" });
+    }
 
-    // const image = handleFileUpload(req.files.image, "courses");
+    const image = handleFileUpload(req.files.image, "courses");
 
     // Find category by ID
     const category = await CourseCategory.findById(categoryId);
@@ -39,7 +39,7 @@ export const createCourse = async (req, res) => {
     }
 
     const newCourse = new Course({
-      // image,
+      image,
       name,
       description,
       duration,
@@ -208,7 +208,7 @@ export const deleteCourse = async (req, res) => {
     const { courseId } = req.params;
 
     // Find and delete the course
-    const course = await Course.findById(courseId);
+    const course = await Course.findByIdAndDelete(courseId);
     if (!course) {
       return res
         .status(404)
